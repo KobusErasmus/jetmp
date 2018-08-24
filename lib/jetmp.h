@@ -86,7 +86,7 @@ void add_value_char() {
     searching_for_key = 1;
     adding_value = 0;
     is_value_a_string = 0;
-  } else if (!is_value_a_string && (character == ' ' || character == ',')) {
+  } else if (!is_value_a_string && (character == ' ' || character == ',' || character == '}')) {
     end_found_key();
     searching_for_key = 1;
     adding_value = 0;
@@ -98,7 +98,6 @@ void add_value_char() {
 
 void add_char_to_word(char c) {
   word[word_index] = c;
-  printf("Added Word: %s\n", word);
   word_index++;
 }
 
@@ -111,13 +110,10 @@ void end_found_key() {
 }
 
 char* find_json_value(char key[], char json[]) {
-  // printf("Result: %s\n", keys_values[1]);
   int i;
   for (i = 0; i < 50; i++) {
     if (strlen(keys_values[i]) == 0) return "";
-    printf("Word #%d: %s\n", i, keys_values[i]);
     if (strcmp(key, keys_values[i]) == 0) {
-      printf("Found Word #%d: %s\n", i + 1, keys_values[i + 1]);
       return keys_values[i + 1];
     }
   }
