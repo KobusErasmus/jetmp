@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// Define variables
 char keys_values[50][101];
 _Bool searching_for_key = 1;
 _Bool searching_for_value = 0;
@@ -15,32 +14,36 @@ char character;
 int word_index = 0;
 int value_index = 0;
 
-// Define functions
 void json_to_array(char json[]);
 char* find_json_value(char key[], char json[]);
 void add_char_to_word(char c);
-void end_found_key();
+void end_word();
 void search_for_key();
 void add_key_char();
 void search_for_colon();
 void search_for_value();
 void add_value_char();
+void analyse_character();
 
 void json_to_array(char json[]) {
   int i;
   for (i = 0; i < strlen(json); i++) {
     character = json[i];
-    if (searching_for_key) {
-      search_for_key();
-    } else if (adding_key) {
-      add_key_char();
-    } else if (searching_for_colon) {
-      search_for_colon();
-    } else if (searching_for_value) {
-      search_for_value();
-    } else if (adding_value) {
-      add_value_char();
-    }
+    analyse_character();
+  }
+}
+
+void analyse_character() {
+  if (searching_for_key) {
+    search_for_key();
+  } else if (adding_key) {
+    add_key_char();
+  } else if (searching_for_colon) {
+    search_for_colon();
+  } else if (searching_for_value) {
+    search_for_value();
+  } else if (adding_value) {
+    add_value_char();
   }
 }
 
@@ -54,7 +57,7 @@ void add_key_char() {
   if (character != '\"') {
     add_char_to_word(character);
   } else {
-    end_found_key();
+    end_word();
     adding_key = 0;
     searching_for_colon = 1;
   }
@@ -82,12 +85,13 @@ void search_for_value() {
 
 void add_value_char() {
   if (is_value_a_string && character == '\"') {
-    end_found_key();
+    end_word();
     searching_for_key = 1;
     adding_value = 0;
     is_value_a_string = 0;
-  } else if (!is_value_a_string && (character == ' ' || character == ',' || character == '}')) {
-    end_found_key();
+  } else if (!is_value_a_string &&
+      (character == ' ' || character == ',' || character == '}')) {
+    end_word();
     searching_for_key = 1;
     adding_value = 0;
     is_value_a_string = 0;
@@ -101,7 +105,7 @@ void add_char_to_word(char c) {
   word_index++;
 }
 
-void end_found_key() {
+void end_word() {
   word[word_index] = '\0';
   strcpy(keys_values[value_index], word);
   value_index++;

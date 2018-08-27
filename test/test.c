@@ -1,7 +1,7 @@
-#include "../lib/jetmp.h"
+#include "../lib/json_parser.h"
 #include "test.h"
 
-char json[] = "{ \"name\":\"Tom Blue\", \"age\": 32, \"Gender\" : \"Male\", \"height\"   :67.0}";
+char json[] = "{ \"name\":\"Tom Blue\", \"age\": 32, \"Gender\" : Male, \"height\"   :67.0}";
 void test_find_json_value_string();
 void test_find_json_value_number();
 void test_no_key_returns_empty_string();
