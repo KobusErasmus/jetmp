@@ -16,20 +16,20 @@ int main() {
 
 void test_find_json_value_string() {
   json_to_array(json);
-  _Bool result = !strcmp("Tom Blue", find_json_value("name", json));
+  _Bool result = !strcmp("Tom Blue", find_json_value("name"));
   assert_true(result, "Find JSON string value");
-  result = !strcmp("Male", find_json_value("Gender", json));
+  result = !strcmp("Male", find_json_value("Gender"));
   assert_true(result, "Find JSON string value");
 }
 
 void test_find_json_value_number() {
-  _Bool result = !strcmp("32", find_json_value("age", json));
+  _Bool result = !strcmp("32", find_json_value("age"));
   assert_true(result, "Find JSON number value");
-  result = !strcmp("67.0", find_json_value("height", json));
+  result = !strcmp("67.0", find_json_value("height"));
   assert_true(result, "Find JSON number value");
 }
 
 void test_no_key_returns_empty_string() {
-  _Bool result = !strcmp("", find_json_value("nonexistent", json));
+  _Bool result = !strcmp("", find_json_value("nonexistent"));
   assert_true(result, "Find JSON nonexistent key returns empty string");
 }

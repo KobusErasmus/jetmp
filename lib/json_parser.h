@@ -15,7 +15,7 @@ int word_index = 0;
 int value_index = 0;
 
 void json_to_array(char json[]);
-char* find_json_value(char key[], char json[]);
+char* find_json_value(char key[]);
 void add_char_to_word(char c);
 void end_word();
 void search_for_key();
@@ -90,7 +90,10 @@ void add_value_char() {
     adding_value = 0;
     is_value_a_string = 0;
   } else if (!is_value_a_string &&
-      (character == ' ' || character == ',' || character == '}')) {
+      (character == ' ' ||
+       character == ',' ||
+       character == '}' ||
+       character == '\n')) {
     end_word();
     searching_for_key = 1;
     adding_value = 0;
@@ -113,7 +116,7 @@ void end_word() {
   word_index = 0;
 }
 
-char* find_json_value(char key[], char json[]) {
+char* find_json_value(char key[]) {
   int i;
   for (i = 0; i < 50; i++) {
     if (strlen(keys_values[i]) == 0) return "";
