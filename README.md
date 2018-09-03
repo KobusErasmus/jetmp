@@ -8,13 +8,16 @@ To install, first clone this repository:
 ```
 git clone https://github.com/KobusErasmus/jetmp
 ```
-Then, cd into jetmp (this cloned repository) and run the install script:
+Then, cd into jetmp (this cloned repository) and run the following:
 ```
-./install.sh
+./configure
+make
+sudo make install
+make clean
 ```
 If you wish to uninstall JETmp, run:
 ```
-./uninstall.sh
+sudo make uninstall
 ```
 
 ## Usage
