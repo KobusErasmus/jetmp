@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char keys_values[50][256];
+char keys_values[100][256];
 _Bool searching_for_key = 1;
 _Bool searching_for_value = 0;
 _Bool searching_for_colon = 0;
