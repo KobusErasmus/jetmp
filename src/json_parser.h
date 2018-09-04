@@ -27,6 +27,7 @@ void search_for_colon();
 void search_for_value();
 void add_value_char();
 void analyse_character();
+_Bool reached_end_of_word();
 
 void json_to_array(char json[]) {
   int i;
@@ -87,23 +88,22 @@ void search_for_value() {
 }
 
 void add_value_char() {
-  if (is_value_a_string && character == '\"') {
-    end_word();
-    searching_for_key = 1;
-    adding_value = 0;
-    is_value_a_string = 0;
-  } else if (!is_value_a_string &&
-      (character == ' ' ||
-       character == ',' ||
-       character == '}' ||
-       character == '\n')) {
-    end_word();
-    searching_for_key = 1;
-    adding_value = 0;
-    is_value_a_string = 0;
-  } else {
+  if (!reached_end_of_word()) {
     add_char_to_word(character);
+    return;
   }
+  end_word();
+  searching_for_key = 1;
+  adding_value = 0;
+  is_value_a_string = 0;
+}
+
+_Bool reached_end_of_word() {
+  return (is_value_a_string && character == '\"') ||
+      (!is_value_a_string && (character == ' ' ||
+        character == ',' ||
+        character == '}' ||
+        character == '\n'));
 }
 
 void add_char_to_word(char c) {

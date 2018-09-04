@@ -109,7 +109,6 @@ void end_interpolation_word() {
 }
 
 void render_partial() {
-  // printf("---%s---", word);
   previous_double_bracket = 0;
   rendering_partial = 0;
   FILE *partial;
