@@ -2,14 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 
-char keys_values[200][256];
+#define MAX_KEYS 200
+#define MAX_VALUE_LENGTH 256
+
+char keys_values[MAX_KEYS][MAX_VALUE_LENGTH];
 _Bool searching_for_key = 1;
 _Bool searching_for_value = 0;
 _Bool searching_for_colon = 0;
 _Bool adding_key = 0;
 _Bool adding_value = 0;
 _Bool is_value_a_string = 0;
-char word[256];
+char word[MAX_VALUE_LENGTH];
 char character;
 int word_index = 0;
 int value_index = 0;
@@ -118,7 +121,7 @@ void end_word() {
 
 char* find_json_value(char key[]) {
   int i;
-  for (i = 0; i < 50; i++) {
+  for (i = 0; i < MAX_KEYS; i++) {
     if (strlen(keys_values[i]) == 0) return "";
     if (strcmp(key, keys_values[i]) == 0) {
       return keys_values[i + 1];
