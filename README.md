@@ -4,7 +4,7 @@
 JETmp is inspired by the Mustache templating system (https://mustache.github.io). However, since I have far simpler templating requirements, I wrote this tiny, fast templating system.
 
 ## Installation
-If you have *wget*, copy and past this in your terminal (all commands on one line):
+If you have *wget*, copy and paste this in your terminal (all commands on one line):
 ```
 wget www.jacobuserasmus.com/jetmp-0.1.tar.gz ; tar -xzvf jetmp-0.1.tar.gz ; cd jetmp-0.1 ; ./configure ; make ; sudo make install ; make clean
 ```
