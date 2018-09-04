@@ -2,14 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 
-char keys_values[50][101];
+char keys_values[50][256];
 _Bool searching_for_key = 1;
 _Bool searching_for_value = 0;
 _Bool searching_for_colon = 0;
 _Bool adding_key = 0;
 _Bool adding_value = 0;
 _Bool is_value_a_string = 0;
-char word[101];
+char word[256];
 char character;
 int word_index = 0;
 int value_index = 0;
