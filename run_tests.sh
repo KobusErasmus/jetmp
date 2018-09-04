@@ -18,7 +18,9 @@ json='{
 expected='<html>
   <head></head>
   <body>
-    <h1>Hello Tom Blue<h1>
+    <h1>Hello Tom Blue</h1>
+    <span> Height: 67.0 </span>
+
     <span class="the class">
       Gender: Male, height: 67.0
     </span>

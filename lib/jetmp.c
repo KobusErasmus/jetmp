@@ -3,6 +3,8 @@
 int insert_index = 0;
 _Bool searching_for_start = 1;
 _Bool previous_char_bracket = 0;
+_Bool rendering_partial = 0;
+_Bool previous_double_bracket = 0;
 char ch;
 char word_ch;
 FILE *file;
@@ -15,6 +17,7 @@ void validate_char_for_prev_bracket_end();
 void insert_char(char c);
 void interpolate_word();
 void end_interpolation_word();
+void render_partial();
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -62,15 +65,21 @@ void validate_char_for_prev_bracket() {
     putc(ch, stdout);
   } else if (ch == '{') {
     searching_for_start = 0;
+    previous_double_bracket = 1;
   }
 }
 
 void validate_character_for_end() {
-  if (!previous_char_bracket && ch == '}') {
+  if (previous_double_bracket && ch == '>') {
+    rendering_partial = 1;
+  } else if (!previous_char_bracket && ch == '}') {
     previous_char_bracket = 1;
+    previous_double_bracket = 0;
   } else if (previous_char_bracket) {
+    previous_double_bracket = 0;
     validate_char_for_prev_bracket_end();
   } else {
+    previous_double_bracket = 0;
     insert_char(ch);
   }
 }
@@ -99,7 +108,27 @@ void end_interpolation_word() {
   searching_for_start = 1;
 }
 
+void render_partial() {
+  // printf("---%s---", word);
+  previous_double_bracket = 0;
+  rendering_partial = 0;
+  FILE *partial;
+  partial = fopen(word, "r");
+  if (partial == NULL) {
+    rendering_partial = 0;
+    return;
+  }
+  while ((ch = getc(partial)) != EOF) {
+    validate_character(ch);
+  }
+  fclose(partial);
+}
+
 void interpolate_word() {
+  if (rendering_partial) {
+    render_partial();
+    return;
+  }
   char *value = find_json_value(word);
   int i = 0;
   while ((word_ch = value[i]) != '\0') {

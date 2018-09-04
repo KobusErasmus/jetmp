@@ -27,6 +27,7 @@ jetmp template json
 ```
 where *template* is a file and *json* is a JSON string.
 
+### Variables
 In your template, simply put the JSON key in between {{ and }}. For example, a template may look something like this:
 ```
 <html>
@@ -50,7 +51,31 @@ This will return:
 </html>
 ```
 
-## Another Example
+### Partials
+To render another file or partial, put the file name in between {{> and }}. For example, your template.html file may look like this:
+```
+<html>
+  <head></head>
+  <body>
+    {{>partial.html}}
+  </body>
+</html>
+```
+Your partial.html file may look like this:
+```
+<h1>Hello {{name}}<h1>
+```
+Your output will then look like this:
+```
+<html>
+  <head></head>
+  <body>
+    <h1>Hello Jacobus<h1>
+  </body>
+</html>
+```
+
+### Another Example
 Consider the ERB example found here: https://ruby-doc.org/stdlib-2.5.1/libdoc/erb/rdoc/ERB.html
 
 Our template may look as follows:
