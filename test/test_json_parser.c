@@ -1,4 +1,4 @@
-#include "../lib/json_parser.h"
+#include "../src/json_parser.h"
 #include "test.h"
 
 char json[] = "{ \"name\":\"Tom Blue\","

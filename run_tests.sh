@@ -8,7 +8,7 @@ gcc -o test_json_parser test_json_parser.c
 rm test_json_parser
 
 # Test jetmep.c
-gcc -o jetmp ../lib/jetmp.c
+gcc -o jetmp ../src/jetmp.c
 filename="html_page.html"
 json='{
   "name":"Tom Blue",

@@ -1,4 +1,4 @@
-#include "json_parser.h"
+#include "./json_parser.h"
 
 int insert_index = 0;
 _Bool searching_for_start = 1;

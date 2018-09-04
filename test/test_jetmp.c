@@ -1,4 +1,4 @@
-#include "../lib/jetmp.h"
+#include "../src/jetmp.h"
 #include "test.h"
 
 char json[] = "{ \"name\":\"Tom Blue\","
