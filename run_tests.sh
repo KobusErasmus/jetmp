@@ -11,6 +11,7 @@ rm test_json_parser
 gcc -o jetmp ../src/jetmp.c
 filename="html_page.html"
 json='{
+  "garbage":"",
   "name":"Tom Blue",
   "age": 32, "Gender" : Male,
   "height"   :67.0

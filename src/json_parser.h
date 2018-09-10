@@ -122,7 +122,6 @@ void end_word() {
 char* find_json_value(char key[]) {
   int i;
   for (i = 0; i < MAX_KEYS; i++) {
-    if (strlen(keys_values[i]) == 0) return "";
     if (strcmp(key, keys_values[i]) == 0) {
       return keys_values[i + 1];
     }
