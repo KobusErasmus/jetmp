@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_KEYS 200
-#define MAX_VALUE_LENGTH 256
+#define MAX_KEYS 100
+#define MAX_KEY_LENGTH 51
+#define MAX_VALUE_LENGTH 501
 
-char keys_values[MAX_KEYS][MAX_VALUE_LENGTH];
+char keys_array[MAX_KEYS][MAX_KEY_LENGTH];
+char values_array[MAX_KEYS][MAX_VALUE_LENGTH];
 _Bool searching_for_key = 1;
 _Bool searching_for_value = 0;
 _Bool searching_for_colon = 0;
@@ -20,7 +22,8 @@ int value_index = 0;
 void json_to_array(char json[]);
 char* find_json_value(char key[]);
 void add_char_to_word(char c);
-void end_word();
+void end_adding_key();
+void end_adding_value();
 void search_for_key();
 void add_key_char();
 void search_for_colon();
@@ -61,7 +64,7 @@ void add_key_char() {
   if (character != '\"') {
     add_char_to_word(character);
   } else {
-    end_word();
+    end_adding_key();
     adding_key = 0;
     searching_for_colon = 1;
   }
@@ -92,7 +95,7 @@ void add_value_char() {
     add_char_to_word(character);
     return;
   }
-  end_word();
+  end_adding_value();
   searching_for_key = 1;
   adding_value = 0;
   is_value_a_string = 0;
@@ -111,9 +114,16 @@ void add_char_to_word(char c) {
   word_index++;
 }
 
-void end_word() {
+void end_adding_key() {
   word[word_index] = '\0';
-  strcpy(keys_values[value_index], word);
+  strcpy(keys_array[value_index], word);
+  strcpy(word, "");
+  word_index = 0;
+}
+
+void end_adding_value() {
+  word[word_index] = '\0';
+  strcpy(values_array[value_index], word);
   value_index++;
   strcpy(word, "");
   word_index = 0;
@@ -122,8 +132,8 @@ void end_word() {
 char* find_json_value(char key[]) {
   int i;
   for (i = 0; i < MAX_KEYS; i++) {
-    if (strcmp(key, keys_values[i]) == 0) {
-      return keys_values[i + 1];
+    if (strcmp(key, keys_array[i]) == 0) {
+      return values_array[i];
     }
   }
   return "";
