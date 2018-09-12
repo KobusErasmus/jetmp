@@ -4,7 +4,7 @@
 
 #define MAX_KEYS 100
 #define MAX_KEY_LENGTH 51
-#define MAX_VALUE_LENGTH 501
+#define MAX_VALUE_LENGTH 1001
 
 char keys_array[MAX_KEYS][MAX_KEY_LENGTH];
 char values_array[MAX_KEYS][MAX_VALUE_LENGTH];
