@@ -14,6 +14,7 @@ _Bool searching_for_colon = 0;
 _Bool adding_key = 0;
 _Bool adding_value = 0;
 _Bool is_value_a_string = 0;
+_Bool previous_ch_escape = 0;
 char word[MAX_VALUE_LENGTH];
 char character;
 int word_index = 0;
@@ -61,12 +62,20 @@ void search_for_key() {
 }
 
 void add_key_char() {
-  if (character != '\"') {
+  if (!previous_ch_escape && character == '\\') {
+    previous_ch_escape = 1;
+  } else if (previous_ch_escape && character == '\"') {
     add_char_to_word(character);
+    previous_ch_escape = 0;
+  } else if (character != '\"') {
+    if (previous_ch_escape) add_char_to_word('\\');
+    add_char_to_word(character);
+    previous_ch_escape = 0;
   } else {
     end_adding_key();
     adding_key = 0;
     searching_for_colon = 1;
+    previous_ch_escape = 0;
   }
 }
 
@@ -91,14 +100,22 @@ void search_for_value() {
 }
 
 void add_value_char() {
-  if (!reached_end_of_word()) {
+  if (!previous_ch_escape && character == '\\') {
+    previous_ch_escape = 1;
+  } else if (previous_ch_escape && character == '\"') {
     add_char_to_word(character);
-    return;
+    previous_ch_escape = 0;
+  } else if (!reached_end_of_word()) {
+    if (previous_ch_escape) add_char_to_word('\\');
+    add_char_to_word(character);
+    previous_ch_escape = 0;
+  } else {
+    end_adding_value();
+    searching_for_key = 1;
+    adding_value = 0;
+    is_value_a_string = 0;
+    previous_ch_escape = 0;
   }
-  end_adding_value();
-  searching_for_key = 1;
-  adding_value = 0;
-  is_value_a_string = 0;
 }
 
 _Bool reached_end_of_word() {

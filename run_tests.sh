@@ -12,6 +12,7 @@ gcc -o jetmp ../src/jetmp.c
 filename="html_page.html"
 json='{
   "garbage":"",
+  "\quote\"":"\double\ quote: \"",
   "name":"Tom Blue",
   "age": 32, "Gender" : Male,
   "height"   :67.0
@@ -24,6 +25,7 @@ expected='<html>
 
     <span class="the class">
       Gender: Male, height: 67.0
+      quote: \\double\\ quote: "
     </span>
     <div>
       <a>The {anchor}</a>
