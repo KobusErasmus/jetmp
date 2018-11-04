@@ -1,0 +1,18 @@
+int insert_index = 0;
+_Bool searching_for_start = 1;
+_Bool previous_char_bracket = 0;
+_Bool rendering_partial = 0;
+_Bool previous_double_bracket = 0;
+char ch;
+char word_ch;
+FILE *file;
+void interpolate_string(void);
+void validate_character(void);
+void validate_character_for_start(void);
+void validate_character_for_end(void);
+void validate_char_for_prev_bracket(void);
+void validate_char_for_prev_bracket_end(void);
+void insert_char(char c);
+void interpolate_word(void);
+void end_interpolation_word(void);
+void render_partial(void);

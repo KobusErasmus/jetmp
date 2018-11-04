@@ -1,23 +1,5 @@
 #include "./json_parser.h"
-
-int insert_index = 0;
-_Bool searching_for_start = 1;
-_Bool previous_char_bracket = 0;
-_Bool rendering_partial = 0;
-_Bool previous_double_bracket = 0;
-char ch;
-char word_ch;
-FILE *file;
-void interpolate_string();
-void validate_character();
-void validate_character_for_start();
-void validate_character_for_end();
-void validate_char_for_prev_bracket();
-void validate_char_for_prev_bracket_end();
-void insert_char(char c);
-void interpolate_word();
-void end_interpolation_word();
-void render_partial();
+#include "./jetmp_definitions.h"
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -118,7 +100,7 @@ void render_partial() {
     return;
   }
   while ((ch = getc(partial)) != EOF) {
-    validate_character(ch);
+    validate_character();
   }
   fclose(partial);
 }
