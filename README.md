@@ -77,6 +77,19 @@ Your output will then look like this:
 </html>
 ```
 
+### Escaping HTML
+If you wish to escape the HTML in the JSON values, add the --escape-html flag
+at the end of the command, e.g.:
+```
+jetmp template.html json.json --escape-html
+```
+This escapes the following six characters: &, <, >, ", ', `.
+
+Please note that this might not be sufficient for your security. For more info,
+see:
+https://wonko.com/post/html-escaping
+https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
+
 ### Another Example
 Consider the ERB example found here: https://ruby-doc.org/stdlib-2.5.1/libdoc/erb/rdoc/ERB.html
 

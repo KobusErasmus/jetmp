@@ -73,11 +73,11 @@ void add_value_char() {
   if (!previous_ch_escape && character == '\\') {
     previous_ch_escape = 1;
   } else if (previous_ch_escape && character == '\"') {
-    add_char_to_word(character);
+    add_char_to_value(character);
     previous_ch_escape = 0;
   } else if (!reached_end_of_word()) {
-    if (previous_ch_escape) add_char_to_word('\\');
-    add_char_to_word(character);
+    if (previous_ch_escape) add_char_to_value('\\');
+    add_char_to_value(character);
     previous_ch_escape = 0;
   } else {
     end_adding_value();
@@ -99,6 +99,27 @@ _Bool reached_end_of_word() {
 void add_char_to_word(char c) {
   word[word_index] = c;
   word_index++;
+}
+
+void add_char_to_value(char c) {
+  if (!escape_html) return add_char_to_word(c);
+  switch(c) {
+    case '&': add_string_to_word("&amp;"); break;
+    case '<': add_string_to_word("&lt;"); break;
+    case '>': add_string_to_word("&gt;"); break;
+    case '\"': add_string_to_word("&quot;"); break;
+    case '\'': add_string_to_word("&rsquo;"); break;
+    case '`': add_string_to_word("&lsquo;"); break;
+    default: add_char_to_word(c);
+  }
+}
+
+void add_string_to_word(char *string) {
+  int i;
+  int l = strlen(string);
+  for (i = 0; i < l; i++) {
+    add_char_to_word(string[i]);
+  }
 }
 
 void end_adding_key() {

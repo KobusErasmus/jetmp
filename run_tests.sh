@@ -36,14 +36,45 @@ expected='<html>
 result=`./jetmp $filename "$json"`
 if [[ $result == $expected ]]
 then
-  echo "All tests pass for: jetmp.c"
+  echo "All tests pass for: jetmp.c normal test"
 else
   echo "FAIL: jetmp.c incorrect interpolation:"
   printf "$result"
 fi
+
+# Test escape html
+filename="html_page.html"
+json='{
+  "garbage":"",
+  "\quote\"":"\double\ quote: \"",
+  "name":"Tom Blue",
+  "age": "& < > \" '"'"' `", "Gender" : Male,
+  "height"   :67.0
+}'
+expected='<html>
+  <head></head>
+  <body>
+    <h1>Hello Tom Blue</h1>
+    <span> Height: 67.0 </span>
+
+    <span class="the class">
+      Gender: Male, height: 67.0
+      quote: \\double\\ quote: &quot;
+    </span>
+    <div>
+      <a>The {anchor}</a>
+      <a>Tom Blue&amp; &lt; &gt; &quot; &rsquo; &lsquo;</a>
+    </div>
+  </body>
+</html>'
+result=`./jetmp $filename "$json" --escape-html`
+if [[ $result == $expected ]]
+then
+  echo "All tests pass for: jetmp.c escape HTML test"
+else
+  echo "FAIL: jetmp.c HTML test incorrect interpolation:"
+  printf "$result"
+  printf "\n\n\n$expected"
+fi
+
 rm jetmp
-
-# gcc -o test_jetmp test_jetmp.c
-# ./test_jetmp
-# rm test_jetmp
-

@@ -2,9 +2,12 @@
 #include "./jetmp_definitions.h"
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    printf("Usage: %s filename json\n", argv[0]);
+  if (argc < 3) {
+    printf("Usage: %s FILENAME JSON [--escape-html]\n", argv[0]);
     exit(EXIT_FAILURE);
+  }
+  if (argc >= 4) {
+    escape_html = (strcmp(argv[3], "--escape-html") == 0);
   }
   file = fopen(argv[1], "r");
   if (file == NULL) {
