@@ -108,8 +108,7 @@ void add_char_to_value(char c) {
     case '<': add_string_to_word("&lt;"); break;
     case '>': add_string_to_word("&gt;"); break;
     case '\"': add_string_to_word("&quot;"); break;
-    case '\'': add_string_to_word("&rsquo;"); break;
-    case '`': add_string_to_word("&lsquo;"); break;
+    case '\'': add_string_to_word("&#39;"); break;
     default: add_char_to_word(c);
   }
 }

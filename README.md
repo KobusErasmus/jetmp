@@ -83,7 +83,7 @@ at the end of the command, e.g.:
 ```
 jetmp template.html json.json --escape-html
 ```
-This escapes the following six characters: &, <, >, ", ', `.
+This escapes the following five characters: &, <, >, ", and '.
 
 Please note that this might not be sufficient for your security. For more info,
 see:

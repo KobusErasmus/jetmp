@@ -48,7 +48,7 @@ json='{
   "garbage":"",
   "\quote\"":"\double\ quote: \"",
   "name":"Tom Blue",
-  "age": "& < > \" '"'"' `", "Gender" : Male,
+  "age": "& < > \" '"'"'", "Gender" : Male,
   "height"   :67.0
 }'
 expected='<html>
@@ -63,7 +63,7 @@ expected='<html>
     </span>
     <div>
       <a>The {anchor}</a>
-      <a>Tom Blue&amp; &lt; &gt; &quot; &rsquo; &lsquo;</a>
+      <a>Tom Blue&amp; &lt; &gt; &quot; &#39;</a>
     </div>
   </body>
 </html>'
