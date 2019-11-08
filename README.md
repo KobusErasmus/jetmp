@@ -100,7 +100,7 @@ jetmp template.html json.json --escape-html --keys 20
 By default, the maximum size of a key is 50. To change
 this, use the [--key-length INT] flag. For example, to set the key size to 200:
 ```
-jetmp template.html json.json --escape-html --key-size 200
+jetmp template.html json.json --escape-html --key-length 200
 ```
 
 By default, the maximum size of a value is 1000. To change
