@@ -33,7 +33,7 @@ expected='<html>
     </div>
   </body>
 </html>'
-result=`./jetmp $filename "$json"`
+result=`./jetmp $filename "$json" --keys 10 --key-length 20 value-length 20`
 if [[ $result == $expected ]]
 then
   echo "All tests pass for: jetmp.c normal test"

@@ -15,21 +15,36 @@ int main() {
 }
 
 void test_find_json_value_string() {
-  json_to_array(json);
-  _Bool result = !strcmp("Tom Blue", find_json_value("name"));
+  int key_length = 51;
+  int value_length = 1001;
+  char keys_array[100][key_length];
+  char values_array[100][value_length];
+  char word[value_length];
+  json_to_array(json, 51, keys_array, value_length, values_array, word);
+  _Bool result = !strcmp("Tom Blue", find_json_value("name", key_length, keys_array, value_length, values_array));
   assert_true(result, "Find JSON string value");
-  result = !strcmp("Male", find_json_value("Gender"));
+  result = !strcmp("Male", find_json_value("Gender", key_length, keys_array, value_length, values_array));
   assert_true(result, "Find JSON string value");
 }
 
 void test_find_json_value_number() {
-  _Bool result = !strcmp("32", find_json_value("age"));
-  assert_true(result, "Find JSON number value");
-  result = !strcmp("67.0", find_json_value("height"));
-  assert_true(result, "Find JSON number value");
+  int key_length = 51;
+  char keys_array[100][key_length];
+  int value_length = 1001;
+  char values_array[100][value_length];
+  char word[value_length];
+  json_to_array(json, 51, keys_array, value_length, values_array, word);
+  _Bool result = !strcmp("32", find_json_value("age", key_length, keys_array, value_length, values_array));
+  assert_true(result, "Find JSON number value 32");
+  result = !strcmp("67.0", find_json_value("height", key_length, keys_array, value_length, values_array));
+  assert_true(result, "Find JSON number value 67");
 }
 
 void test_no_key_returns_empty_string() {
-  _Bool result = !strcmp("", find_json_value("nonexistent"));
+  int key_length = 51;
+  char keys_array[100][key_length];
+  int value_length = 1001;
+  char values_array[100][value_length];
+  _Bool result = !strcmp("", find_json_value("nonexistent", key_length, keys_array, value_length, values_array));
   assert_true(result, "Find JSON nonexistent key returns empty string");
 }

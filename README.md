@@ -90,6 +90,25 @@ see:
 https://wonko.com/post/html-escaping
 https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 
+### Maximum Keys, Key Length, and Value Length
+By default, the maximum number of keys allowed in the JSON is 100. To change
+this, use the [--keys INT] flag. For example, to set the maximum keys to 20:
+```
+jetmp template.html json.json --escape-html --keys 20
+```
+
+By default, the maximum size of a key is 50. To change
+this, use the [--key-length INT] flag. For example, to set the key size to 200:
+```
+jetmp template.html json.json --escape-html --key-size 200
+```
+
+By default, the maximum size of a value is 1000. To change
+this, use the [--value-length INT] flag. For example, to set the value size to 2000:
+```
+jetmp template.html json.json --escape-html --value-length 2000
+```
+
 ### Another Example
 Consider the ERB example found here: https://ruby-doc.org/stdlib-2.5.1/libdoc/erb/rdoc/ERB.html
 
