@@ -24,7 +24,8 @@ int main(int argc, char *argv[]) {
   }
   char keys_array[max_keys][key_length];
   char values_array[max_keys][value_length];
-  char word[200];
+  int word_length = value_length > 201 ? value_length : 201;
+  char word[word_length];
   file = fopen(argv[1], "r");
   if (file == NULL) {
     printf("Cannot open %s\n", argv[1]);
