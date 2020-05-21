@@ -77,4 +77,19 @@ else
   printf "\n\n\n$expected"
 fi
 
+# Test long partial filename
+filename="html_page2.html"
+json='{"@_heading":"The Heading"}'
+expected='
+The Heading'
+result=`./jetmp $filename "$json" --escape-html --keys 1 --key-length 9 --value-length 11`
+if [[ $result == $expected ]]
+then
+  echo "All tests pass for: jetmp.c long partial filename test"
+else
+  echo "FAIL: jetmp.c long partial filename test incorrect interpolation:"
+  printf "$result"
+  printf "\n\n\n$expected"
+fi
+
 rm jetmp
