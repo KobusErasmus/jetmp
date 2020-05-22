@@ -92,4 +92,23 @@ else
   printf "\n\n\n$expected"
 fi
 
+# Test loop
+filename="loop.html"
+json='{"heading":"Test looping", "names0":"John", "names1":"Jack", "names2":"Jill"}'
+expected='<h1>Test looping</h1>
+
+<h2>John</h2>
+<h2>Jack</h2>
+<h2>Jill</h2>
+'
+result=`./jetmp $filename "$json" --escape-html`
+if [[ $result == $expected ]]
+then
+  echo "All tests pass for: jetmp.c loop test"
+else
+  echo "FAIL: jetmp.c loop test incorrect interpolation:"
+  printf "$result"
+  printf "\n\n\n$expected"
+fi
+
 rm jetmp

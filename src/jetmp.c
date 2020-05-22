@@ -80,6 +80,8 @@ void validate_char_for_prev_bracket() {
 void validate_character_for_end(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
   if (previous_double_bracket && ch == '>') {
     rendering_partial = 1;
+  } else if (!previous_double_bracket && ch == '+') {
+    rendering_loop = 1;
   } else if (!previous_char_bracket && ch == '}') {
     previous_char_bracket = 1;
     previous_double_bracket = 0;

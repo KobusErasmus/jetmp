@@ -2,6 +2,7 @@ int insert_index = 0;
 _Bool searching_for_start = 1;
 _Bool previous_char_bracket = 0;
 _Bool rendering_partial = 0;
+_Bool rendering_loop = 0;
 _Bool previous_double_bracket = 0;
 char ch;
 char word_ch;
