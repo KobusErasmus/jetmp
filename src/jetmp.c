@@ -111,7 +111,10 @@ void validate_char_for_prev_bracket_end(int k, char keys_array[][k], int v, char
 }
 
 void render_loop(int k, char keys_array[][k], int v, char values_array[][v], char *word, int index, int count, int start_index) {
-  if (count <= 0 || index >= count) return;
+  if (count <= 0 || index >= count) {
+    fseek(file, -1, SEEK_CUR);
+    return;
+  }
   fseek(file, start_index, SEEK_SET);
   while ((ch = getc(file)) != EOF) {
     if (reached_loop_end) {

@@ -98,11 +98,17 @@ json='{"_h31":"2", "_h30":"1", "heading":"Test looping", "_names0":"John", "labe
 expected='<h1>Test looping</h1>
 
 <h2>Name: John Kant</h2>
-aaaa<h3>1</h3><h3>2</h3>
+aaaa
+<h3>1</h3><h3>2</h3>
+
 <h2>Name: Jack </h2>
-aaaa<h3>1</h3><h3>2</h3>
+aaaa
+<h3>1</h3><h3>2</h3>
+
 <h2>Name: Jill </h2>
-aaaa<h3>1</h3><h3>2</h3>'
+aaaa
+<h3>1</h3><h3>2</h3>
+End'
 result=`./jetmp $filename "$json" --escape-html`
 if [[ $result == $expected ]]
 then
