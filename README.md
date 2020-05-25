@@ -77,7 +77,7 @@ Your output will then look like this:
 </html>
 ```
 
-### Looping
+### Loops
 
 To create a loop, open the loop with the {{+NUM}} tag, where NUM
 is some integer denoting the number of loops, and close the loop
