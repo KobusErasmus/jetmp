@@ -78,11 +78,12 @@ Your output will then look like this:
 ```
 
 ### Looping
+
 To create a loop, open the loop with the {{+NUM}} tag, where NUM
-is some integer, and close the loop with the {{-}} tag. Tags
-within the loop that begin with "_", will try to be inserted by
-finding a JSON key that resembles the tag with the current loop
-index appened to the end.
+is some integer denoting the number of loops, and close the loop
+with the {{-}} tag. Tags within the loop that begin with "_"
+will try to be inserted by finding a JSON key that resembles the
+tag with the current loop index appened to the end.
 
 For example, suppose your file.txt looks as follows:
 ```
