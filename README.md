@@ -77,6 +77,40 @@ Your output will then look like this:
 </html>
 ```
 
+### Looping
+To create a loop, open the loop with the {{+NUM}} tag, where NUM
+is some integer, and close the loop with the {{-}} tag. Tags
+within the loop that begin with "_", will try to be inserted by
+finding a JSON key that resembles the tag with the current loop
+index appened to the end.
+
+For example, suppose your file.txt looks as follows:
+```
+{{heading}}
+{{+3}}
+Name: {{_names}} {{_surnames}}
+{{+3}}dum {{-}}
+{{-}}
+```
+Then, if you run the following command:
+```
+jetmp file.txt '{"heading":"Test loop", "_names0":"Jack", "_names1":"Jill", "_names2":"John" "_surnames0":"Back", "_surnames1":"Bill", "_surnames2":"Bohn"}'
+```
+the output would be:
+```
+Test loop
+
+Name: Jack Back
+dum dum dum
+
+Name: Jill Bill
+dum dum dum
+
+Name: John Bohn
+dum dum dum
+
+```
+
 ### Escaping HTML
 If you wish to escape the HTML in the JSON values, add the --escape-html flag
 at the end of the command, e.g.:
