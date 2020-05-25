@@ -80,22 +80,24 @@ Your output will then look like this:
 ### Loops
 
 To create a loop, open the loop with the {{+NUM}} tag, where NUM
-is some integer denoting the number of loops, and close the loop
-with the {{-}} tag. Tags within the loop that begin with "_"
-will try to be inserted by finding a JSON key that resembles the
-tag with the current loop index appened to the end.
+is some integer denoting the number of loops, or the {{+KEY}}
+tag, where KEY is a JSON key whose value is an integer string
+denoting the loop count. Close the loop with the {{-}} tag. Tags
+within the loop that begin with "_" will try to be inserted by
+finding a JSON key that resembles the tag with the current loop
+index appened to the end.
 
 For example, suppose your file.txt looks as follows:
 ```
 {{heading}}
-{{+3}}
+{{+names}}
 Name: {{_names}} {{_surnames}}
 {{+3}}dum {{-}}
 {{-}}
 ```
 Then, if you run the following command:
 ```
-jetmp file.txt '{"heading":"Test loop", "_names0":"Jack", "_names1":"Jill", "_names2":"John" "_surnames0":"Back", "_surnames1":"Bill", "_surnames2":"Bohn"}'
+jetmp file.txt '{"heading":"Test loop", "names":"3", "_names0":"Jack", "_names1":"Jill", "_names2":"John" "_surnames0":"Back", "_surnames1":"Bill", "_surnames2":"Bohn"}'
 ```
 the output would be:
 ```

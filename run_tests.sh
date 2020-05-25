@@ -94,7 +94,7 @@ fi
 
 # Test loop
 filename="loop.html"
-json='{"_h31":"2", "_h30":"1", "heading":"Test looping", "_names0":"John", "label":"Name: ", "_names1":"Jack", "_names2":"Jill", "_surnames0":"Kant"}'
+json='{"_h31":"2", "_h30":"1", "heading":"Test looping", "names":"3", "_names0":"John", "label":"Name: ", "_names1":"Jack", "_names2":"Jill", "_surnames0":"Kant"}'
 expected='<h1>Test looping</h1>
 
 <h2>Name: John Kant</h2>

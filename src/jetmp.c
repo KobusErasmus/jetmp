@@ -102,7 +102,10 @@ void validate_char_for_prev_bracket_end(int k, char keys_array[][k], int v, char
     if (getting_loop_tag) {
       end_interpolation_word(word);
       getting_loop_tag = 0;
-      render_loop(k, keys_array, v, values_array, word, 0, atoi(word), ftell(file));
+      int lc = atoi(word);
+      if (lc == 0)
+        lc = atoi(find_json_value(word, k, keys_array, v, values_array));
+      render_loop(k, keys_array, v, values_array, word, 0, lc, ftell(file));
     } else {
       end_interpolation_word(word);
       interpolate_word(k, keys_array, v, values_array, word, loop_index);
