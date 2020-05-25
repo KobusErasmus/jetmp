@@ -43,16 +43,16 @@ void exit_with_usage() {
 
 void interpolate_string(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
   while ((ch = getc(file)) != EOF) {
-    validate_character(k, keys_array, v, values_array, word);
+    validate_character(k, keys_array, v, values_array, word, -1);
   }
   fclose(file);
 }
 
-void validate_character(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
+void validate_character(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
   if (searching_for_start) {
     validate_character_for_start();
   } else {
-    validate_character_for_end(k, keys_array, v, values_array, word);
+    validate_character_for_end(k, keys_array, v, values_array, word, loop_index);
   }
 }
 
@@ -77,30 +77,50 @@ void validate_char_for_prev_bracket() {
   }
 }
 
-void validate_character_for_end(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
+void validate_character_for_end(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
   if (previous_double_bracket && ch == '>') {
     rendering_partial = 1;
-  } else if (!previous_double_bracket && ch == '+') {
-    rendering_loop = 1;
+  } else if (previous_double_bracket && ch == '+') {
+    getting_loop_tag = 1;
   } else if (!previous_char_bracket && ch == '}') {
     previous_char_bracket = 1;
     previous_double_bracket = 0;
   } else if (previous_char_bracket) {
     previous_double_bracket = 0;
-    validate_char_for_prev_bracket_end(k, keys_array, v, values_array, word);
+    validate_char_for_prev_bracket_end(k, keys_array, v, values_array, word, loop_index);
   } else {
     previous_double_bracket = 0;
     insert_char(ch, word);
   }
 }
 
-void validate_char_for_prev_bracket_end(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
+void validate_char_for_prev_bracket_end(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
   if (ch != '}') {
     previous_char_bracket = 0;
     insert_char(ch, word);
   } else if (ch == '}') {
-    end_interpolation_word(word);
-    interpolate_word(k, keys_array, v, values_array, word);
+    if (getting_loop_tag) {
+      end_interpolation_word(word);
+      getting_loop_tag = 0;
+      render_loop(k, keys_array, v, values_array, word, 0, atoi(word), ftell(file));
+    } else {
+      end_interpolation_word(word);
+      interpolate_word(k, keys_array, v, values_array, word, loop_index);
+    }
+  }
+}
+
+void render_loop(int k, char keys_array[][k], int v, char values_array[][v], char *word, int index, int count, int start_index) {
+  if (count <= 0 || index >= count) return;
+  fseek(file, start_index, SEEK_SET);
+  while ((ch = getc(file)) != EOF) {
+    if (reached_loop_end) {
+      reached_loop_end = 0;
+      render_loop(k, keys_array, v, values_array, word, index + 1, count, start_index);
+      break;
+    } else {
+      validate_character(k, keys_array, v, values_array, word, index);
+    }
   }
 }
 
@@ -128,17 +148,31 @@ void render_partial(int k, char keys_array[][k], int v, char values_array[][v], 
     return;
   }
   while ((ch = getc(partial)) != EOF) {
-    validate_character(k, keys_array, v, values_array, word);
+    validate_character(k, keys_array, v, values_array, word, -1);
   }
   fclose(partial);
 }
 
-void interpolate_word(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
+void interpolate_word(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
   if (rendering_partial) {
     render_partial(k, keys_array, v, values_array, word);
     return;
   }
-  char *value = find_json_value(word, k, keys_array, v, values_array);
+  if (strcmp(word, "-") == 0) {
+    reached_loop_end = 1;
+    strcpy(word, "");
+    insert_index = 0;
+    return;
+  }
+  char key[strlen(word) + 20];
+  strcpy(key, "");
+  strcpy(key, word);
+  if (loop_index >= 0 && word[0] == '_') {
+    char s_nr[20];
+    sprintf(s_nr, "%d", loop_index);
+    strcat(key, s_nr);
+  }
+  char *value = find_json_value(key, k, keys_array, v, values_array);
   int i = 0;
   while ((word_ch = value[i]) != '\0') {
     printf("%c", word_ch);

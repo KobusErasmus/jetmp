@@ -79,7 +79,7 @@ fi
 
 # Test long partial filename
 filename="html_page2.html"
-json='{"@_heading":"The Heading"}'
+json='{"_heading":"The Heading"}'
 expected='
 The Heading'
 result=`./jetmp $filename "$json" --escape-html --keys 1 --key-length 9 --value-length 11`
@@ -94,13 +94,15 @@ fi
 
 # Test loop
 filename="loop.html"
-json='{"heading":"Test looping", "names0":"John", "names1":"Jack", "names2":"Jill"}'
+json='{"_h31":"2", "_h30":"1", "heading":"Test looping", "_names0":"John", "label":"Name: ", "_names1":"Jack", "_names2":"Jill", "_surnames0":"Kant"}'
 expected='<h1>Test looping</h1>
 
-<h2>John</h2>
-<h2>Jack</h2>
-<h2>Jill</h2>
-'
+<h2>Name: John Kant</h2>
+aaaa<h3>1</h3><h3>2</h3>
+<h2>Name: Jack </h2>
+aaaa<h3>1</h3><h3>2</h3>
+<h2>Name: Jill </h2>
+aaaa<h3>1</h3><h3>2</h3>'
 result=`./jetmp $filename "$json" --escape-html`
 if [[ $result == $expected ]]
 then

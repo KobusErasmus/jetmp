@@ -13,6 +13,7 @@ int value_index = 0;
 
 void json_to_array(char json[], int k, char a[][k], int v, char values_array[][v], char *w);
 char* find_json_value(char key[], int k, char a[][k], int v, char b[][v]);
+int init_loop_count(char key[], int k, char keys_array[][k], int v, char values_array[][v]);
 void add_char_to_word(char c, char *w);
 static void add_char_to_value(char c, char *w);
 static void add_string_to_word(char[], char *w);
