@@ -1,122 +1,102 @@
 #!/bin/bash
 
+print_test_pass() {
+  printf "."
+}
+
+print_test_fail() {
+  printf "\nFAIL: $1\nExpected:\n"
+  printf "$expected"
+  printf "\nActual:\n"
+  printf "$result\n"
+}
+
+evaluate_result() {
+  if [[ $result == $expected ]]
+  then
+    print_test_pass
+  else
+    print_test_fail "$1"
+  fi
+}
+
 cd test
-
-# Test json_parser.c
-gcc -o test_json_parser test_json_parser.c
-./test_json_parser
-rm test_json_parser
-
-# Test jetmep.c
 gcc -o jetmp ../src/jetmp.c
-filename="html_page.html"
-json='{
-  "garbage":"",
-  "\quote\"":"\double\ quote: \"",
-  "name":"Tom Blue",
-  "age": 32, "Gender" : Male,
-  "height"   :67.0
-}'
-expected='<html>
-  <head></head>
-  <body>
-    <h1>Hello Tom Blue</h1>
-    <span> Height: 67.0 </span>
 
-    <span class="the class">
-      Gender: Male, height: 67.0
-      quote: \\double\\ quote: "
-    </span>
-    <div>
-      <a>The {anchor}</a>
-      <a>Tom Blue32</a>
-    </div>
-  </body>
-</html>'
-result=`./jetmp $filename "$json" --keys 10 --key-length 20 value-length 20`
-if [[ $result == $expected ]]
-then
-  echo "All tests pass for: jetmp.c normal test"
-else
-  echo "FAIL: jetmp.c incorrect interpolation:"
-  printf "$result"
-fi
+#Test 1
+filename="test3.html"
+expected="Usage: jetmp FILENAME KEY1:'VALUE 1' KEY2:'VALUE 2' ..."
+result=`./jetmp $filename`
+evaluate_result 'Test 1'
+result=`./jetmp name:'Tom'`
+evaluate_result 'Test 1'
 
-# Test escape html
-filename="html_page.html"
-json='{
-  "garbage":"",
-  "\quote\"":"\double\ quote: \"",
-  "name":"Tom Blue",
-  "age": "& < > \" '"'"'", "Gender" : Male,
-  "height"   :67.0
-}'
-expected='<html>
-  <head></head>
-  <body>
-    <h1>Hello Tom Blue</h1>
-    <span> Height: 67.0 </span>
+#Test 2
+filename="test_does_not_exist.html"
+expected="Cannot open file test_does_not_exist.html"
+result=`./jetmp $filename name:'Tom'`
+evaluate_result 'Test 2'
 
-    <span class="the class">
-      Gender: Male, height: 67.0
-      quote: \\double\\ quote: &quot;
-    </span>
-    <div>
-      <a>The {anchor}</a>
-      <a>Tom Blue&amp; &lt; &gt; &quot; &#39;</a>
-    </div>
-  </body>
-</html>'
-result=`./jetmp $filename "$json" --escape-html`
-if [[ $result == $expected ]]
-then
-  echo "All tests pass for: jetmp.c escape HTML test"
-else
-  echo "FAIL: jetmp.c HTML test incorrect interpolation:"
-  printf "$result"
-  printf "\n\n\n$expected"
-fi
+#Test 3
+filename="test3.html"
+expected="<h1>Hello {Tom}</h1>"
+result=`./jetmp $filename name:'Tom'`
+evaluate_result 'Test 3'
 
-# Test long partial filename
-filename="html_page2.html"
-json='{"_heading":"The Heading"}'
-expected='
-The Heading'
-result=`./jetmp $filename "$json" --escape-html --keys 1 --key-length 9 --value-length 11`
-if [[ $result == $expected ]]
-then
-  echo "All tests pass for: jetmp.c long partial filename test"
-else
-  echo "FAIL: jetmp.c long partial filename test incorrect interpolation:"
-  printf "$result"
-  printf "\n\n\n$expected"
-fi
+#Test 4
+filename="test4.html"
+expected="<h1>Hello Tom Blue, see you tomorrow</h1>"
+result=`./jetmp $filename name:'Tom Blue' day:tomorrow`
+evaluate_result 'Test 4'
 
-# Test loop
-filename="loop.html"
-json='{"_h31":"2", "_h30":"1", "heading":"Test looping", "names":"3", "_names0":"John", "label":"Name: ", "_names1":"Jack", "_names2":"Jill", "_surnames0":"Kant"}'
-expected='<h1>Test looping</h1>
+#Test 5
+filename="test5.html"
+expected="<h1>Hello JETmp syntax error: missing closing braces"
+result=`./jetmp $filename name:'Tom Blue' day:tomorrow`
+evaluate_result 'Test 5'
 
-<h2>Name: John Kant</h2>
-aaaa
-<h3>1</h3><h3>2</h3>
+#Test 6
+filename="test6.html"
+expected="JETmp syntax error: missing closing braces"
+result=`./jetmp $filename name:'Tom Blue' day:tomorrow`
+evaluate_result 'Test 6'
 
-<h2>Name: Jack </h2>
-aaaa
-<h3>1</h3><h3>2</h3>
+#Test 7
+filename="test7.html"
+expected="<h1>&amp; &lt; &gt; &quot; &#39;</h1>"
+result=`./jetmp $filename heading:"& < > \" '"`
+evaluate_result 'Test 7'
 
-<h2>Name: Jill </h2>
-aaaa
-<h3>1</h3><h3>2</h3>
-End'
-result=`./jetmp $filename "$json" --escape-html`
-if [[ $result == $expected ]]
-then
-  echo "All tests pass for: jetmp.c loop test"
-else
-  echo "FAIL: jetmp.c loop test incorrect interpolation:"
-  printf "$result"
-  printf "\n\n\n$expected"
-fi
+#Test 8
+filename="test8.html"
+expected="<h1>&amp; &lt; &gt; &quot; &#39; & < > \" '<span>test</span></h1>"
+result=`./jetmp $filename heading1:"& < > \" '" heading2:"& < > \" '" heading3:'<span>test</span>'`
+evaluate_result 'Test 8'
 
+#Test 9
+filename="test9.html"
+expected="<div>
+<h1>Hello Tom Blue, see you tomorrow</h1>
+
+</div>"
+result=`./jetmp $filename name:'Tom Blue' day:tomorrow`
+evaluate_result 'Test 9'
+
+#Test 10
+filename="test10.html"
+expected="<div>
+
+  User:
+  <p>Tom Blue tom@test.com</p><br><br><br>
+  <i>1234</i><i>5678</i>
+
+  User:
+  <p>Jack Johnson jack@test.com</p><br><br><br>
+  <i>1234</i><i>5678</i>
+
+</div>"
+result=`./jetmp $filename repeat:3 hidden:0 heading:'User:' users:2 name1:'Tom' surname1:'Blue' email1:'tom@test.com' name2:'Jack' surname2:'Johnson' email2:'jack@test.com' ids:2 id1:1234 id2:5678`
+evaluate_result 'Test 10'
+
+printf "\n"
 rm jetmp

@@ -25,12 +25,12 @@ sudo make uninstall
 ## Usage
 To run the program, use the following format:
 ```
-jetmp template json
+jetmp template key1:"value 1" key2:"value 2" ...
 ```
-where *template* is a file and *json* is a JSON string.
+where *template* is a file followed by some set of key/value pairs.
 
 ### Variables
-In your template, simply put the JSON key in between {{ and }}. For example, a template may look something like this:
+In your template, simply put the keys in between {{ and }}. For example, a template may look something like this:
 ```
 <html>
   <head></head>
@@ -41,7 +41,7 @@ In your template, simply put the JSON key in between {{ and }}. For example, a t
 ```
 Suppose that this template file is called "template.html". Then, you may run the command as follows:
 ```
-jetmp template.html '{"name":"Jacobus"}'
+jetmp template.html name:Jacobus
 ```
 This will return:
 ```
@@ -79,115 +79,54 @@ Your output will then look like this:
 
 ### Loops
 
-To create a loop, open the loop with the {{+NUM}} tag, where NUM
-is some integer denoting the number of loops, or the {{+KEY}}
-tag, where KEY is a JSON key whose value is an integer string
-denoting the loop count. Close the loop with the {{-}} tag. Tags
-within the loop that begin with "_" will try to be inserted by
-finding a JSON key that resembles the tag with the current loop
-index appened to the end.
+To create a loop, open the loop with the {{#KEY}} tag, where KEY
+is a key whose value is an integer (or integer string) denoting
+the loop count (i.e., how many times to loop). Close the loop
+with the {{-}} tag. Tags within the loop that end with "#" will
+try to be inserted by finding a key that resembles the tag with
+the current loop index appended to the end.
 
 For example, suppose your file.txt looks as follows:
 ```
 {{heading}}
-{{+names}}
-Name: {{_names}} {{_surnames}}
-{{+3}}dum {{-}}
+{{#names}}
+Name: {{name#}} {{surname#}}
 {{-}}
 ```
 Then, if you run the following command:
 ```
-jetmp file.txt '{"heading":"Test loop", "names":"3", "_names0":"Jack", "_names1":"Jill", "_names2":"John" "_surnames0":"Back", "_surnames1":"Bill", "_surnames2":"Bohn"}'
+jetmp file.txt heading:"Test loop" names:3 name1:"Jack" name2:"Jill" name3:"John" surname1:"Back" surname2:"Bill" surname3:"Bohn"
 ```
 the output would be:
 ```
 Test loop
 
 Name: Jack Back
-dum dum dum
 
 Name: Jill Bill
-dum dum dum
 
 Name: John Bohn
-dum dum dum
 
 ```
+
+Currently, you can only have nested loops of depth one. In other
+words, you can have a second loop within an initial loop, but you
+cannot place a third loop within the second loop. Things will
+break. If you require deep nested loops, you can easily adjust
+the code of JETmp accordingly.
 
 ### Escaping HTML
-If you wish to escape the HTML in the JSON values, add the --escape-html flag
-at the end of the command, e.g.:
-```
-jetmp template.html json.json --escape-html
-```
-This escapes the following five characters: &, <, >, ", and '.
 
-Please note that this might not be sufficient for your security. For more info,
-see:
-https://wonko.com/post/html-escaping
+By default, the normal tag {{KEY}} escapes HTML, that is to say, when the
+tag's value is inserted, the following five characters are
+escaped: &, <, >, ", and '.
+
+Please note that this might not be sufficient for your security.
+For more info, see: https://wonko.com/post/html-escaping
 https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 
-### Maximum Keys, Key Length, and Value Length
-By default, the maximum number of keys allowed in the JSON is 100. To change
-this, use the [--keys INT] flag. For example, to set the maximum keys to 20:
-```
-jetmp template.html json.json --escape-html --keys 20
-```
-
-By default, the maximum size of a key is 50. To change
-this, use the [--key-length INT] flag. For example, to set the key size to 200:
-```
-jetmp template.html json.json --escape-html --key-length 200
-```
-
-By default, the maximum size of a value is 1000. To change
-this, use the [--value-length INT] flag. For example, to set the value size to 2000:
-```
-jetmp template.html json.json --escape-html --value-length 2000
-```
-
-### Another Example
-Consider the ERB example found here: https://ruby-doc.org/stdlib-2.5.1/libdoc/erb/rdoc/ERB.html
-
-Our template may look as follows:
-```
-From:  James Edward Gray II <james@grayproductions.net>
-To:  {{to}}
-Subject:  Addressing Needs
-
-{{to_name}}:
-
-Just wanted to send a quick note assuring that your needs are being
-addressed.
-
-I want you to know that my team will keep working on the issues,
-especially:
-
-  * {{priority1}}
-  * {{priority2}}
-  * {{priority3}}
-
-Thanks for your patience.
-
-James Edward Gray II
-```
-Let the above template file be called "jetmp_template".
-
-Let us now write a script called benchmark.sh:
-```
-#!/bin/bash
-
-json='{
-  "to":"Community Spokesman <spokesman@ruby_community.org>",
-  "to_name":"Community",
-  "priority1":"Run Ruby Quiz",
-  "priority2": "Document Modules",
-  "priority3":"Answer Questions on Ruby Talk"}'
-
-puts "JETmp benchmark:"
-time jetmp jetmp_template "$json"
-```
-Make this script executable and run it to run a simple benchmark.
+However, if you do not wish to escape HTML, then use the {{/KEY}}
+tag and not the {{KEY}} tag.
 
 ## About Author
 See www.JacobusErasmus.com

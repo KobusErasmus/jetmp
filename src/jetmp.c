@@ -1,189 +1,184 @@
-#include "./json_parser.h"
-#include "./jetmp_definitions.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+char buffer[101], loop_count_buffer[11];
+int buffer_index = 0, buffer_length, i, j, k,
+    loop_index, loop_start, loop_count,
+    loop_index2, loop_start2, loop_count2;
+_Bool match = 0, html_escape = 1, in_loop = 0,
+      in_loop2 = 0;
+char **ptr_argv;
+int *ptr_argc;
+char prev_ch, tmp_ch;
+void evaluate_char(char*, FILE*);
+void buffer_key(char*, FILE*);
+void print_key_value(void);
+void print_partial(void);
+void init_loop(_Bool*, int*, int*, int*, FILE*);
+void evaluate_loop(_Bool*, int*, int*, int*, FILE*);
 
 int main(int argc, char *argv[]) {
-  int key_length = 51;
-  int value_length = 1001;
-  if (argc < 3) exit_with_usage();
-  if (argc >= 4) {
-    int i;
-    for (i = 3; i < argc; i++) {
-      if ((strcmp(argv[i], "--escape-html") == 0)) {
-        escape_html = 1;
-      } else if ((strcmp(argv[i], "--keys") == 0)) {
-        if (argc == i + 1) exit_with_usage();
-        max_keys = atoi(argv[i + 1]);
-      } else if ((strcmp(argv[i], "--key-length") == 0)) {
-        if (argc == i + 1) exit_with_usage();
-        key_length = atoi(argv[i + 1]) + 1;
-      } else if ((strcmp(argv[i], "--value-length") == 0)) {
-        if (argc == i + 1) exit_with_usage();
-        value_length = atoi(argv[i + 1]) + 1;
+  if (argc < 3) {
+    printf("Usage: jetmp FILENAME KEY1:'VALUE 1' KEY2:'VALUE 2' ...\n");
+    exit(EXIT_FAILURE);
+  }
+  FILE *file = fopen(argv[1], "r");
+  if (file == NULL) {
+    printf("Cannot open file %s\n", argv[1]);
+    exit(EXIT_FAILURE);
+  }
+  ptr_argv = argv;
+  ptr_argc = &argc;
+  char ch;
+  while ((ch = getc(file)) != EOF) {
+    evaluate_char(&ch, file);
+  }
+  fclose(file);
+  return 0;
+}
+
+void evaluate_char(char *ptr_ch, FILE *file) {
+  if (*ptr_ch != '{' && in_loop && loop_count <= 0) return;
+  if (*ptr_ch != '{') {
+    putc(*ptr_ch, stdout);
+    return;
+  }
+  *ptr_ch = getc(file);
+  if (*ptr_ch != '{') {
+    putc('{', stdout);
+    putc(*ptr_ch, stdout);
+    return;
+  }
+  *ptr_ch = getc(file);
+  if (*ptr_ch == '/') {
+    html_escape = 0;
+  } else if (*ptr_ch == '>') {
+    buffer_key(ptr_ch, file);
+    print_partial();
+    return;
+  } else if (*ptr_ch == '#') {
+    buffer_key(ptr_ch, file);
+    if (!in_loop)
+      init_loop(&in_loop, &loop_index, &loop_start, &loop_count, file);
+    else
+      init_loop(&in_loop2, &loop_index2, &loop_start2, &loop_count2, file);
+    return;
+  } else {
+    fseek(file, -2, SEEK_CUR);
+    *ptr_ch = getc(file);
+  }
+  buffer_key(ptr_ch, file);
+  if (in_loop2)
+      evaluate_loop(&in_loop2, &loop_index2, &loop_start2, &loop_count2, file);
+  else if (in_loop)
+      evaluate_loop(&in_loop, &loop_index, &loop_start, &loop_count, file);
+  else
+    print_key_value();
+}
+
+void buffer_key(char *ptr_ch, FILE *file) {
+  buffer[0] = '\0';
+  buffer_index = 0;
+  prev_ch = '\0';
+  while (*ptr_ch != '}' || (*ptr_ch == '}' && prev_ch != '}')) {
+    prev_ch = *ptr_ch;
+    *ptr_ch = getc(file);
+    if (*ptr_ch == EOF) {
+      printf("JETmp syntax error: missing closing braces");
+      exit(EXIT_FAILURE);
+    }
+    if (*ptr_ch != ' ' && *ptr_ch != '}')
+      buffer[buffer_index++] = *ptr_ch;
+  }
+  buffer[buffer_index] = '\0';
+}
+
+void print_key_value() {
+  match = 0;
+  for (i = 2; i < *ptr_argc; i++) {
+    for (j = 0; j < buffer_index; j++) {
+      if (buffer[j] != ptr_argv[i][j]) {
+        match = 0;
+        break;
+      } else {
+        match = 1;
+      }
+    }
+    if (!match || ptr_argv[i][j] != ':')
+      continue;
+    while (ptr_argv[i][++j] != '\0') {
+      tmp_ch = ptr_argv[i][j];
+      if (html_escape) {
+        switch(tmp_ch) {
+          case '&': printf("&amp;"); break;
+          case '<': printf("&lt;"); break;
+          case '>': printf("&gt;"); break;
+          case '\"': printf("&quot;"); break;
+          case '\'': printf("&#39;"); break;
+          default: putc(tmp_ch, stdout);
+        }
+      } else {
+        putc(tmp_ch, stdout);
       }
     }
   }
-  char keys_array[max_keys][key_length];
-  char values_array[max_keys][value_length];
-  int word_length = value_length > 201 ? value_length : 201;
-  char word[word_length];
-  file = fopen(argv[1], "r");
-  if (file == NULL) {
-    printf("Cannot open %s\n", argv[1]);
-    exit(EXIT_FAILURE);
-  }
-  json_to_array(argv[2], key_length, keys_array, value_length, values_array, word);
-  interpolate_string(key_length, keys_array, value_length, values_array, word);
+  html_escape = 1;
 }
 
-void exit_with_usage() {
-  printf("Usage: jetmp FILENAME JSON [--escape-html] [--keys INT] [--key-length INT] [--value-length INT]\n");
-  exit(EXIT_FAILURE);
-}
-
-
-void interpolate_string(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
+void print_partial() {
+  FILE *file = fopen(buffer, "r");
+  if (file == NULL) return;
+  char ch;
   while ((ch = getc(file)) != EOF) {
-    validate_character(k, keys_array, v, values_array, word, -1);
+    evaluate_char(&ch, file);
   }
   fclose(file);
 }
 
-void validate_character(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
-  if (searching_for_start) {
-    validate_character_for_start();
-  } else {
-    validate_character_for_end(k, keys_array, v, values_array, word, loop_index);
-  }
-}
-
-void validate_character_for_start() {
-  if (!previous_char_bracket && ch == '{') {
-    previous_char_bracket = 1;
-  } else if (previous_char_bracket) {
-    validate_char_for_prev_bracket();
-  } else {
-    putc(ch, stdout);
-  }
-}
-
-void validate_char_for_prev_bracket() {
-  if (ch != '{') {
-    previous_char_bracket = 0;
-    putc('{', stdout);
-    putc(ch, stdout);
-  } else if (ch == '{') {
-    searching_for_start = 0;
-    previous_double_bracket = 1;
-  }
-}
-
-void validate_character_for_end(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
-  if (previous_double_bracket && ch == '>') {
-    rendering_partial = 1;
-  } else if (previous_double_bracket && ch == '+') {
-    getting_loop_tag = 1;
-  } else if (!previous_char_bracket && ch == '}') {
-    previous_char_bracket = 1;
-    previous_double_bracket = 0;
-  } else if (previous_char_bracket) {
-    previous_double_bracket = 0;
-    validate_char_for_prev_bracket_end(k, keys_array, v, values_array, word, loop_index);
-  } else {
-    previous_double_bracket = 0;
-    insert_char(ch, word);
-  }
-}
-
-void validate_char_for_prev_bracket_end(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
-  if (ch != '}') {
-    previous_char_bracket = 0;
-    insert_char(ch, word);
-  } else if (ch == '}') {
-    if (getting_loop_tag) {
-      end_interpolation_word(word);
-      getting_loop_tag = 0;
-      int lc = atoi(word);
-      if (lc == 0)
-        lc = atoi(find_json_value(word, k, keys_array, v, values_array));
-      render_loop(k, keys_array, v, values_array, word, 0, lc, ftell(file));
-    } else {
-      end_interpolation_word(word);
-      interpolate_word(k, keys_array, v, values_array, word, loop_index);
+void init_loop(_Bool *ptr_in_loop, int *ptr_loop_index, int *ptr_loop_start, int *ptr_loop_count, FILE *file) {
+  *ptr_in_loop = 1;
+  *ptr_loop_index = 1;
+  *ptr_loop_start = ftell(file);
+  match = 0;
+  *ptr_loop_count = 0;
+  loop_count_buffer[0] = '0';
+  loop_count_buffer[1] = '\0';
+  for (i = 2; i < *ptr_argc; i++) {
+    for (j = 0; j < buffer_index; j++) {
+      if (buffer[j] != ptr_argv[i][j]) {
+        match = 0;
+        break;
+      } else {
+        match = 1;
+      }
+    }
+    if (!match || ptr_argv[i][j] != ':')
+      continue;
+    k = 0;
+    while (ptr_argv[i][++j] != '\0') {
+      loop_count_buffer[k++] = ptr_argv[i][j];
     }
   }
+  *ptr_loop_count = atoi(loop_count_buffer);
 }
 
-void render_loop(int k, char keys_array[][k], int v, char values_array[][v], char *word, int index, int count, int start_index) {
-  if (count <= 0 || index >= count) {
-    fseek(file, -1, SEEK_CUR);
-    return;
-  }
-  fseek(file, start_index, SEEK_SET);
-  while ((ch = getc(file)) != EOF) {
-    if (reached_loop_end) {
-      reached_loop_end = 0;
-      render_loop(k, keys_array, v, values_array, word, index + 1, count, start_index);
-      break;
+void evaluate_loop(_Bool *ptr_in_loop, int *ptr_loop_index, int *ptr_loop_start, int *ptr_loop_count, FILE *file) {
+  if (strcmp(buffer, "-") == 0) {
+    if (*ptr_loop_index >= *ptr_loop_count) {
+      *ptr_in_loop = 0;
+      *ptr_loop_count = 0;
+      *ptr_loop_index = 0;
     } else {
-      validate_character(k, keys_array, v, values_array, word, index);
+      *ptr_loop_index = *ptr_loop_index + 1;
+      fseek(file, *ptr_loop_start, SEEK_SET);
     }
-  }
-}
-
-void insert_char(char c, char *word) {
-  if (c != ' ') {
-    word[insert_index] = c;
-    insert_index++;
-  }
-}
-
-void end_interpolation_word(char *word) {
-  word[insert_index] = '\0';
-  insert_index = 0;
-  previous_char_bracket = 0;
-  searching_for_start = 1;
-}
-
-void render_partial(int k, char keys_array[][k], int v, char values_array[][v], char *word) {
-  previous_double_bracket = 0;
-  rendering_partial = 0;
-  FILE *partial;
-  partial = fopen(word, "r");
-  if (partial == NULL) {
-    rendering_partial = 0;
     return;
   }
-  while ((ch = getc(partial)) != EOF) {
-    validate_character(k, keys_array, v, values_array, word, -1);
+  buffer_length = strlen(buffer);
+  if (buffer_length >= 1 && buffer[buffer_length - 1] == '#') {
+    buffer[buffer_length - 1] = '\0';
+    sprintf(buffer, "%s%d", buffer, *ptr_loop_index);
   }
-  fclose(partial);
-}
-
-void interpolate_word(int k, char keys_array[][k], int v, char values_array[][v], char *word, int loop_index) {
-  if (rendering_partial) {
-    render_partial(k, keys_array, v, values_array, word);
-    return;
-  }
-  if (strcmp(word, "-") == 0) {
-    reached_loop_end = 1;
-    strcpy(word, "");
-    insert_index = 0;
-    return;
-  }
-  char key[strlen(word) + 20];
-  strcpy(key, "");
-  strcpy(key, word);
-  if (loop_index >= 0 && word[0] == '_') {
-    char s_nr[20];
-    sprintf(s_nr, "%d", loop_index);
-    strcat(key, s_nr);
-  }
-  char *value = find_json_value(key, k, keys_array, v, values_array);
-  int i = 0;
-  while ((word_ch = value[i]) != '\0') {
-    printf("%c", word_ch);
-    i++;
-  }
-  strcpy(word, "");
-  insert_index = 0;
+  print_key_value();
 }

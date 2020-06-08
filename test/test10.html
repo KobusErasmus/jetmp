@@ -1,0 +1,7 @@
+<div>
+{{#users}}
+  {{heading}}
+  <p>{{name#}} {{surname#}} {{email#}}</p>{{#repeat}}<br>{{-}}
+  {{#ids}}<i>{{id#}}</i>{{-}}
+{{-}}{{#hidden}} Do not show me.  {{-}}
+</div>
