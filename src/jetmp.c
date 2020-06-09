@@ -125,6 +125,7 @@ void print_key_value() {
         putc(tmp_ch, stdout);
       }
     }
+    break;
   }
   html_escape = 1;
 }
