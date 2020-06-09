@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-char buffer[101], loop_count_buffer[11];
+char buffer[101], loop_count_buffer[11], initial_buffer_char;
 int buffer_index = 0, buffer_length, i, j, k,
     loop_index, loop_start, loop_count,
-    loop_index2, loop_start2, loop_count2;
+    loop_index2, loop_start2, loop_count2,
+    initial_buffer_index;
 _Bool match = 0, html_escape = 1, in_loop = 0,
       in_loop2 = 0;
 char **ptr_argv;
@@ -51,6 +52,8 @@ void evaluate_char(char *ptr_ch, FILE *file) {
     return;
   }
   *ptr_ch = getc(file);
+  initial_buffer_char = '\0';
+  initial_buffer_index = 0;
   if (*ptr_ch == '/') {
     html_escape = 0;
   } else if (*ptr_ch == '>') {
@@ -64,9 +67,9 @@ void evaluate_char(char *ptr_ch, FILE *file) {
     else
       init_loop(&in_loop2, &loop_index2, &loop_start2, &loop_count2, file);
     return;
-  } else {
-    fseek(file, -2, SEEK_CUR);
-    *ptr_ch = getc(file);
+  } else if (*ptr_ch != ' ') {
+    initial_buffer_char = *ptr_ch;
+    initial_buffer_index = 1;
   }
   buffer_key(ptr_ch, file);
   if (in_loop2)
@@ -78,8 +81,8 @@ void evaluate_char(char *ptr_ch, FILE *file) {
 }
 
 void buffer_key(char *ptr_ch, FILE *file) {
-  buffer[0] = '\0';
-  buffer_index = 0;
+  buffer[0] = initial_buffer_char;
+  buffer_index = initial_buffer_index;
   prev_ch = '\0';
   while (*ptr_ch != '}' || (*ptr_ch == '}' && prev_ch != '}')) {
     prev_ch = *ptr_ch;
