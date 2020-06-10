@@ -92,11 +92,20 @@ expected="<div>
 
   User:
   <p>Jack Johnson jack@test.com</p><br><br><br>
-  <i>1234</i><i>5678</i>
+  <i>9</i><i>0</i>
 
 </div>"
-result=`./jetmp $filename repeat:3 hidden:0 heading:'User:' users:2 name1:'Tom' surname1:'Blue' email1:'tom@test.com' name2:'Jack' surname2:'Johnson' email2:'jack@test.com' ids:2 id1:1234 id2:5678`
+result=`./jetmp $filename repeat:3 hidden:0 heading:'User:' users:2 name1:'Tom' surname1:'Blue' email1:'tom@test.com' name2:'Jack' surname2:'Johnson' email2:'jack@test.com' ids:2 id1_1:"1234" id1_2:5678 id2_1:9 id2_2:0`
 evaluate_result 'Test 10'
+
+#Test 11
+filename="test11.html"
+expected="Author: Jack
+Books: book1 book2 book3 
+Author: Jill
+Books: book4 book5 book6 "
+result=`./jetmp $filename authors:2 author1:Jack author2:Jill author3:John books:3 book1_1:book1 book1_2:book2 book1_3:book3 book2_1:book4 book2_2:book5 book2_3:book6`
+evaluate_result 'Test 11'
 
 printf "\n"
 rm jetmp

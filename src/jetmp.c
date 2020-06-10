@@ -182,7 +182,11 @@ void evaluate_loop(_Bool *ptr_in_loop, int *ptr_loop_index, int *ptr_loop_start,
   buffer_length = strlen(buffer);
   if (buffer_length >= 1 && buffer[buffer_length - 1] == '#') {
     buffer[buffer_length - 1] = '\0';
-    sprintf(buffer, "%s%d", buffer, *ptr_loop_index);
+    if (in_loop2)
+      sprintf(buffer, "%s%d_%d", buffer, loop_index, *ptr_loop_index);
+    else
+      sprintf(buffer, "%s%d", buffer, *ptr_loop_index);
+    buffer_index = strlen(buffer);
   }
   print_key_value();
 }

@@ -115,6 +115,25 @@ cannot place a third loop within the second loop. Things will
 break. If you require deep nested loops, you can easily adjust
 the code of JETmp accordingly.
 
+An example of a nested loop: Suppose your file.txt contains the
+following:
+```
+{{#authors}} Author: {{author#}}
+Books: {{#books}}{{book#}} {{-}}
+{{-}}
+```
+Then, if you run:
+```
+jetmp file.txt authors:2 author1:Jack author2:Jill books:3 book1_1:book1 book1_2:book2 book1_3:book3 book2_1:book4 book2_2:book5 book2_3:book6
+```
+the output will be:
+```
+Author: Jack
+Books: book1 book2 book3
+Author: Jill
+Books: book4 book5 book6
+```
+
 ### Escaping HTML
 
 By default, the normal tag {{KEY}} escapes HTML, that is to say, when the
