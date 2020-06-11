@@ -2,6 +2,6 @@
 {{#users}}
   {{heading}}
   <p>{{name#}} {{surname#}} {{email#}}</p>{{#repeat}}<br>{{-}}
-  {{#ids}}<i>{{id#}}</i>{{-}}
+  {{#ids}}<i>{{id#}}</i>{{-}}{{#hide}} Do not show me.{{-}}
 {{-}}{{#hidden}} Do not show me.  {{-}}
 </div>

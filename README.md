@@ -124,14 +124,14 @@ Books: {{#books}}{{book#}} {{-}}
 ```
 Then, if you run:
 ```
-jetmp file.txt authors:2 author1:Jack author2:Jill books:3 book1_1:book1 book1_2:book2 book1_3:book3 book2_1:book4 book2_2:book5 book2_3:book6
+jetmp file.txt authors:2 author1:Jack author2:Jill books1:3 books2:2 book1_1:book1 book1_2:book2 book1_3:book3 book2_1:book4 book2_2:book5
 ```
 the output will be:
 ```
 Author: Jack
 Books: book1 book2 book3
 Author: Jill
-Books: book4 book5 book6
+Books: book4 book5
 ```
 
 ### Escaping HTML

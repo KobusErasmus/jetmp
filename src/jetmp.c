@@ -40,8 +40,9 @@ int main(int argc, char *argv[]) {
 }
 
 void evaluate_char(char *ptr_ch, FILE *file) {
-  if (*ptr_ch != '{' && in_loop && loop_count <= 0) return;
   if (*ptr_ch != '{') {
+    if ((in_loop && loop_count <= 0) || (in_loop2 && loop_count2 <= 0))
+      return;
     putc(*ptr_ch, stdout);
     return;
   }
@@ -62,10 +63,13 @@ void evaluate_char(char *ptr_ch, FILE *file) {
     return;
   } else if (*ptr_ch == '#') {
     buffer_key(ptr_ch, file);
-    if (!in_loop)
+    if (!in_loop) {
       init_loop(&in_loop, &loop_index, &loop_start, &loop_count, file);
-    else
+    } else {
+    sprintf(buffer, "%s%d", buffer, loop_index);
+    buffer_index = strlen(buffer);
       init_loop(&in_loop2, &loop_index2, &loop_start2, &loop_count2, file);
+    }
     return;
   } else if (*ptr_ch != ' ') {
     initial_buffer_char = *ptr_ch;
