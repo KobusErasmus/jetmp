@@ -95,7 +95,7 @@ expected="<div>
   <i>9</i>
 
 </div>"
-result=`./jetmp $filename repeat1:3 repeat2:3 hidden:0 heading:'User:' users:2 name1:'Tom' surname1:'Blue' email1:'tom@test.com' name2:'Jack' surname2:'Johnson' email2:'jack@test.com' ids1:2 ids2:1 id1_1:"1234" id1_2:5678 id2_1:9 hide1:0 hide2:0`
+result=`./jetmp $filename repeat1:3 repeat2:3 hidden:0 heading:'User:' users:2 name1:'Tom' surname1:'Blue' email1:'tom@test.com' name2:'Jack' surname2:'Johnson' email2:'jack@test.com' ids1:2 ids2:1 id1_1:"1234" id1_2:5678 id2_1:9 hide1:0 hide2:0 hide_id1:4`
 evaluate_result 'Test 10'
 
 #Test 11

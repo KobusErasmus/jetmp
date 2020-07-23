@@ -197,7 +197,7 @@ void evaluate_loop(_Bool *ptr_in_loop, int *ptr_loop_index, int *ptr_loop_start,
       snprintf(buffer, BUFFER_SIZE, "%s%d", buffer2, *ptr_loop_index);
     buffer_index = strlen(buffer);
   }
-  print_key_value();
+  if (*ptr_loop_count > 0) print_key_value();
 }
 
 void init_buffer2() {
