@@ -190,11 +190,19 @@ void evaluate_loop(_Bool *ptr_in_loop, int *ptr_loop_index, int *ptr_loop_start,
   buffer_length = strlen(buffer);
   if (buffer_length >= 1 && buffer[buffer_length - 1] == '#') {
     buffer[buffer_length - 1] = '\0';
-    init_buffer2();
-    if (in_loop2)
-      snprintf(buffer, BUFFER_SIZE, "%s%d_%d", buffer2, loop_index, *ptr_loop_index);
-    else
+    if (in_loop2) {
+      if (buffer_length >= 2 && buffer[buffer_length - 2] == '#') {
+        buffer[buffer_length - 2] = '\0';
+        init_buffer2();
+        snprintf(buffer, BUFFER_SIZE, "%s%d", buffer2, loop_index);
+      } else {
+        init_buffer2();
+        snprintf(buffer, BUFFER_SIZE, "%s%d_%d", buffer2, loop_index, *ptr_loop_index);
+      }
+    } else {
+      init_buffer2();
       snprintf(buffer, BUFFER_SIZE, "%s%d", buffer2, *ptr_loop_index);
+    }
     buffer_index = strlen(buffer);
   }
   if (*ptr_loop_count > 0) print_key_value();
